@@ -15,7 +15,31 @@ x11.createClient(async function(err, display) {
     const getFocus = promisify(X.GetInputFocus.bind(X));
     const getAttributes = promisify(X.GetWindowAttributes.bind(X));
     const getGeometry = promisify(X.GetGeometry.bind(X));
+    const queryTree = promisify(X.QueryTree.bind(X));
     const timeout = promisify(setTimeout);
+
+    async function getGeometryInRoot(window) {
+
+        let ret = await getGeometry(window);
+
+        while(true) {
+
+            let qtRes = await queryTree(window);
+
+            if(qtRes.root == qtRes.parent) {
+                break;
+            }
+
+            window = qtRes.parent;
+
+            let geo = await getGeometry(window);
+
+            ret.xPos += geo.xPos;
+            ret.yPos += geo.yPos;
+        }
+
+        return ret;
+    }
 
     let i = 6;
     console.log("getting window in: ");
@@ -34,7 +58,7 @@ x11.createClient(async function(err, display) {
 
         if(currentWindow == targetWindow) {
 
-            let geo = await getGeometry(targetWindow);
+            let geo = await getGeometryInRoot(targetWindow);
 
             let ptr = await queryPointer(root);
 
