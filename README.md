@@ -12,3 +12,6 @@ This node script finds a target window after 5 seconds then locks the cursor to 
 >   $ npm start
 
 Then find the window you wish to lock to and wait 5 seconds. Changing focus from that window with Alt-Tab or something else disables the lock. Ctrl-C to exit.
+
+Known bugs:
+ * It's working on regular windows but I'm having trouble with Dragon Age: Origins, the xPos is always 0 for some reason
